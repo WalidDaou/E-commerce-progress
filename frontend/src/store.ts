@@ -1,11 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { JwtPayload } from 'jsonwebtoken';
+import {JwtPayload}  from 'jsonwebtoken'
 
 interface CommerceStore {
     token: string,
     setToken: (token: string) => void
-
     cart: {},
     emptyCart: () => void,
     addOneToCart: (productId: string) => void,
@@ -16,6 +15,8 @@ interface CommerceStore {
     setSearchFilter: (searchString: string) => void,
     categoryFilter: string,
     setCategoryFilter: (category: string) => void,
+    productSorting: 1 | -1,
+    setProductSorting: (sorting: number) => void,
     userName: string,
     setUserName: (userName: string) => void,
     userEmail: string,
@@ -27,33 +28,31 @@ interface CommerceStore {
 
     showCart: boolean,
     setShowCart: (value: boolean) => void,
-
+    showConfimModal: boolean,
+    setShowConfirmModal: (value: boolean) => void,
+    onCancel: Function,
+    setOnCancel: (callback: Function) => void,
+    onConfirm: Function,
+    setOnConfirm: (callback: Function) => void,
+    confirmModalMessage: string,
+    setConfirmModalMessage: (message: string) => void,
+    showReviewModal: boolean,
+    setShowReviewModal: (value: boolean) => void,
+    productBeingReviewed: any,
+    setProductBeingReviewed: (product: any) => void,
+    favorites: string[],
+    setFavorites: (favorites: string[]) => void,
     decodedToken: JwtPayload | null;
     setDecodedToken: (decodedToken: JwtPayload | null) => void;
 
-    forHiding: boolean,
-    setForHiding: (value: boolean) => void,
 }
 
 export const useCommerceStore = create<CommerceStore>(
     // @ts-ignore
     persist(
         (set, get) => ({
-
-            decodedToken: null,
-            setDecodedToken: (decodedToken) => set({ decodedToken }),
-
             token: '',
             setToken: (token) => set((state) => ({ token: token })),
-
-            forHiding: true,
-            setForHiding: (value: boolean) => set((state) => {
-                return {
-                    forHiding: value,
-
-                }
-            }),
-
             cart: {},
             emptyCart: () => set((state) => { return { cart: {} } }),
             addOneToCart: (productId) => set((state) => {
@@ -101,6 +100,11 @@ export const useCommerceStore = create<CommerceStore>(
                 }
             }),
 
+            productSorting: 1,
+            setProductSorting: (sorting: any) => set((state) => ({
+                productSorting: sorting
+            })),
+
             userName: '',
             setUserName: (userName) => set((state) => {
                 return {
@@ -120,6 +124,29 @@ export const useCommerceStore = create<CommerceStore>(
                     // cart:{}
                 }
             }),
+            showConfimModal: false,
+            setShowConfirmModal: (value) => set((state) => ({
+                showConfimModal: value
+            })),
+            confirmModalMessage: '',
+            setConfirmModalMessage: (message: string) => set((state) => ({ confirmModalMessage: message })),
+            onCancel: () => { },
+            setOnCancel: (callback) => set((state) => ({ onCancel: callback })),
+            onConfirm: () => { },
+            setOnConfirm: (callback) => set((state) => ({ onConfirm: callback })),
+
+            // reviews
+            productBeingReviewed: {},
+            setProductBeingReviewed: (product) => set((state) => ({ productBeingReviewed: product })),
+            showReviewModal: false,
+            setShowReviewModal: (value: boolean) => set((state) => ({ showReviewModal: value })),
+
+            favorites: [],
+            setFavorites: (favorites: string[]) => set((state) => ({
+                favorites: favorites
+            })),
+            decodedToken: null,
+            setDecodedToken: (decodedToken) => set({ decodedToken }),
         }),
         {
             name: 'mern-ecom-app', // name of the item in the storage (must be unique)

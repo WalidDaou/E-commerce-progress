@@ -1,47 +1,45 @@
 import React, { useState } from 'react'
 import { useCommerceStore } from "../../store"
-import { homeURL } from "../../shared/constants"
+import { homeAPI } from "../../shared/constants"
 
-function CreateStore() {
+function CreateStore({ inputs, setInputs }: {
+    inputs: {
+        name: string,
+        description: string,
+        location: string,
+        logo: any,
+    }, setInputs: Function
+}) {
 
     const {
         token,
-        setForHiding
+        setToken
     } = useCommerceStore()
 
-    const [inputs, setInputs] = useState({
-        name: '',
-        description: '',
-        location: ''
-    })
 
     const handleCreateStore = (e: any) => {
+        const formData = new FormData()
+        formData.append('name', inputs.name)
+        formData.append('description', inputs.description)
+        formData.append('location', inputs.location)
+        formData.append('logo', inputs.logo)
+
         // localhost:5000/api/v1/stores/create
-        fetch(homeURL + '/stores/create', {
+        fetch(homeAPI + '/stores/create', {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json",
+                // fetch will automatically generate  the appropriate header for us based on the Content-Type of the body passed in.
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify(inputs)
+            body: formData
         })
             .then((response) => response.json())
             .then((response) => {
                 console.log(response)
-                if (response.ok) {
-                    alert('Successfully created store! But it still need to be approved')
-                    setForHiding(false)
-                } else {
-                    console.error('Error:', response.statusText);
-                    alert('Your store have been created ! But it still need to be approved')
-                    setForHiding(false)
-
+                if (response.status === 200) {
+                    setToken(response.data.token)
                 }
-
-            }).catch(function (error) {
-                console.log(error);
-                alert('You alredy have a store! But it still need to be approved')
-            });
+            })
     }
 
 
@@ -51,7 +49,7 @@ function CreateStore() {
         justifyContent: 'space-between'
     }
     return (
-        <form action="" style={formStyle}>
+        <form className="flex flex-col" action="" style={formStyle}>
             <span>
                 <label htmlFor="store-name">Store Name</label>
                 <input type="text" name="store-name" id="store-name" value={inputs.name} onChange={(e) => { setInputs({ ...inputs, name: e.target.value }) }} />
@@ -65,6 +63,12 @@ function CreateStore() {
             <span>
                 <label htmlFor="store-location">Store Location</label>
                 <input type="text" name="store-location" id="store-location" value={inputs.location} onChange={(e) => { setInputs({ ...inputs, location: e.target.value }) }} />
+            </span>
+
+            <span>
+                <label htmlFor="store-logo">Store Logo</label>
+                {/* @ts-ignore */}
+                <input onChange={(e) => setInputs({ ...inputs, logo: e.target.files[0] })} type="file" name="store-logo" id="store-logo" />
             </span>
 
             <button onClick={handleCreateStore} type="button">Create Store</button>

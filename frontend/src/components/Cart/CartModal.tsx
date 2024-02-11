@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useCommerceStore } from "../../store"
 import CartItem from "./CartItem"
-import { greenButtonStyle, homeURL } from "../../shared/constants"
+import { greenButtonStyle, homeAPI } from "../../shared/constants"
 import { useNavigate } from "react-router-dom"
+import DarkFullScreenWrapper from "../Shared/DarkFullScreenWrapper"
 
 function CartModal() {
-  
+
   const navigate = useNavigate()
 
   const {
@@ -19,7 +20,7 @@ function CartModal() {
   useEffect(() => {
 
     const fetchCartProducts = async () => {
-      const response = await fetch(homeURL + '/products/cart', {
+      const response = await fetch(homeAPI + '/products/cart', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +39,7 @@ function CartModal() {
   }, [])
 
   const handleConfirmOrder = async () => {
-    const response = await fetch(homeURL + '/orders/create', {
+    const response = await fetch(homeAPI + '/orders/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,14 +49,14 @@ function CartModal() {
         cart: cart
       })
     })
-    if(200 === response.status){
+    if (200 === response.status) {
       const result = await response.json()
       // empty cart
       emptyCart()
       // hide cart MOdal
       setShowCart(false)
       // navigate to my orders page
-      navigate ('/my-orders')
+      navigate('/my-orders')
     }
   }
 
@@ -82,7 +83,7 @@ function CartModal() {
   }
 
   return (
-    <div className="overflow-y-scroll w-full h-full absolute bg-[rgba(1,1,1,0.95)] z-10 p-6 text-white font-bold text-xl">
+    <DarkFullScreenWrapper>
       <span className="flex justify-between">
         <div>Cart</div>
         <p className="cursor-pointer" onClick={() => setShowCart(false)}>X</p>
@@ -97,7 +98,7 @@ function CartModal() {
         Total: ${getTotal()}
         <button className={greenButtonStyle} onClick={handleConfirmOrder} type="button">Confirm Order</button>
       </div>
-    </div>
+    </DarkFullScreenWrapper>
   )
 }
 

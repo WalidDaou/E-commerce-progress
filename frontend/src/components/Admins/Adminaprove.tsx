@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { homeURL } from '../../shared/constants';
+import { homeAPI, homeURL } from '../../shared/constants';
 import { useCommerceStore } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import { superAdmins } from '../../shared/constants';
+import { parseJwt } from '../../shared/utils';
 
 interface Store {
     _id?: string
@@ -18,11 +19,12 @@ interface Store {
 
 const AdminApprove: React.FC<{ _id: string }> = ({ _id }) => {
     const [stores, setStores] = useState<Store[]>([]);
-    const { decodedToken, token } = useCommerceStore()
+    const { decodedToken, setDecodedToken, token } = useCommerceStore()
     const navigate = useNavigate()
+    setDecodedToken(parseJwt(token))
 
     useEffect(() => {
-        console.log(decodedToken?.user.email)
+        console.log(parseJwt(token)?.user.email)
         if (superAdmins.includes(decodedToken?.user.email)) {
             return navigate('/dashboard')
         } else {
@@ -34,7 +36,7 @@ const AdminApprove: React.FC<{ _id: string }> = ({ _id }) => {
     useEffect(() => {
         const fetchStores = async () => {
             try {
-                const response = await fetch(homeURL + `/store/list`);
+                const response = await fetch(homeAPI + '/store/list');
                 if (!response.ok) {
                     throw new Error('Failed to fetch stores');
                 }
@@ -51,7 +53,7 @@ const AdminApprove: React.FC<{ _id: string }> = ({ _id }) => {
 
     const handleApprove = async (storeId: String) => {
         try {
-            const response = await fetch(homeURL + `/stores/approve/${storeId}`, {
+            const response = await fetch(homeAPI + `/stores/approve/${storeId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,7 +83,7 @@ const AdminApprove: React.FC<{ _id: string }> = ({ _id }) => {
     const handleReject = async (storeId: String) => {
         // Implement rejection logic if needed
         try {
-            const response = await fetch(homeURL + `/stores/approve/${storeId}`, {
+            const response = await fetch(homeAPI + `/stores/approve/${storeId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -8,7 +8,7 @@ function FavoritesFilter() {
     toggleFavoritesFilter
   } = useCommerceStore()
   return (
-    <BsHeartFill onClick={toggleFavoritesFilter} size={40} className={`BsHeart-main m-0 p-0 ${favoritesToggled && 'active'}`} />
+    <BsHeartFill onClick={toggleFavoritesFilter} size={40} className={`BsHeart-main m-0 p-0 cursor-pointer ${favoritesToggled && 'active'}`} />
   )
 }
 

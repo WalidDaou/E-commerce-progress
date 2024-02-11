@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useCommerceStore } from "../store"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
-import { homeURL } from "../shared/constants"
+import { homeAPI } from "../shared/constants"
 import ProductCard from "../components/Products/ProductCard"
 import Order from "../components/Orders/Order"
 
@@ -18,11 +18,11 @@ export default function MyOrders() {
             return navigate('/auth/login')
         }
         // localhost:5000/api/v1/users/register
-        axios.get(homeURL + '/orders/my-orders',
+        axios.get(homeAPI + '/orders/my-orders',
             { headers: { 'Authorization': `Bearer ${token}` } })
             .then(function (response) {
                 console.log(response);
-                if(Array.isArray(response.data)){
+                if (Array.isArray(response.data)) {
                     setMyOrders(response.data)
                 }
             })
@@ -32,11 +32,11 @@ export default function MyOrders() {
 
     }, [])
     return (
-        <>
+        <div className="flex flex-col h-screen items-start px-6">
             <h1>MyOrders</h1>
-            {myOrders.map((order) => (
-                <Order order={order}/>
-            ))}
-        </>
+            {myOrders.length ? myOrders.map((order) => (
+                <Order order={order} />
+            )) : <h1 className="m-auto">You have no orders yet!</h1>}
+        </div>
     )
 }

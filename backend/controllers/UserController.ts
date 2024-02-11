@@ -1,10 +1,10 @@
 import express from "express";
 import bcrypt from 'bcrypt'
-import jwt, { Secret } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config()
 
-const TOKEN_SECRET: Secret = process.env.TOKEN_SECRET || 'default_secret';
+const TOKEN_SECRET = process.env.TOKEN_SECRET
 
 import User from '../models/User'
 
@@ -26,6 +26,7 @@ UsersController.get('/list', async (req, res) => {
 UsersController.post('/register', async (req, res) => {
     try {
 
+        // TODO validate email regex
         const {
             name,
             email,
@@ -51,6 +52,10 @@ UsersController.post('/register', async (req, res) => {
         await user.save()
 
         console.log(user)
+
+        if (!TOKEN_SECRET) {
+            throw new Error("TOKEN_SECRET is not defined!");
+        }
         let token = jwt.sign({ user: { ...user?.toJSON(), password: '' } }, TOKEN_SECRET)
         res.json({ token })
 
@@ -84,11 +89,12 @@ UsersController.post('/login', async (req, res) => {
             return res.status(400).json({ error: "Credentials wrong!" })
         }
         console.log(user)
+        
+        if (!TOKEN_SECRET) {
+            throw new Error("TOKEN_SECRET is not defined!");
+        }
         let token = jwt.sign({ user: { ...user?.toJSON(), password: '' } }, TOKEN_SECRET)
-
-        const decoded = jwt.verify(token, TOKEN_SECRET);
-
-        res.json({ token , decoded })
+        res.json({ token })
     } catch (error) {
         console.log(error)
         res.status(400).json({ error: "Failed to create User!" })

@@ -2,6 +2,7 @@ import React from 'react'
 import { useCommerceStore } from "../../store"
 import { CiSquarePlus } from "react-icons/ci";
 import { CiSquareMinus } from "react-icons/ci";
+import ProductCarousel from "../Products/ProductCarousel";
 
 function CartItem({ product, number }: { product: any, number: number }) {
 
@@ -20,7 +21,7 @@ function CartItem({ product, number }: { product: any, number: number }) {
   return (
     <div className="flex justify-between items-center rounded-xl overflow-clip bg-gray-700">
       <div className="w-[25%]">
-        <img src="/pexels-photo-90946.webp" alt="" />
+        <ProductCarousel pictures={product.pictures} />
       </div>
       <div className="w-[50%]">
         some description {product._id}

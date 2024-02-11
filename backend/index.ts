@@ -1,7 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
 // Using ES6 imports
-import cors from "cors";
 import mongoose from 'mongoose';
 
 import ProductsController from "./controllers/ProductsController";
@@ -10,16 +10,19 @@ import ProductsController from "./controllers/ProductsController";
 import StoreController from "./controllers/StoreController";
 import UsersController from "./controllers/UserController";
 import ReviewsController from "./controllers/ReviewsController";
-import OrdersController from './controllers/OrdersController';
+import OrdersController from "./controllers/OrdersController";
 dotenv.config()
 
 const PORT = process.env.PORT
 const databaseURL = process.env.DATABASE_URL || 'default_connection_string';
 const app = express()
-app.use(cors());
 
+
+app.use(express.static('public'))
 // needed to allow parsing the request body as JSON
 app.use(express.json())
+// app.use(express.urlencoded({ extended: true }))
+app.use(cors())
 
 // products
 app.use('/api/v1/product', ProductsController)
@@ -44,11 +47,9 @@ app.use('/api/v1/orders', OrdersController)
 
 
 console.log("log after mongoose.connect")
-app.get('/ready', (req:any, res:any) => {
+app.get('/ready', (req, res) => {
     res.send('Server is running!')
 })
-
-
 
 console.log(databaseURL)
 if (!databaseURL) {
@@ -71,5 +72,3 @@ mongoose.connect(databaseURL)
 //         console.log(`Server started on port ${PORT}!`)
 //     })
 // }
-
-
